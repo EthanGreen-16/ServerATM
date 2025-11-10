@@ -40,14 +40,14 @@ def handle_client(conn, addr):
 
                 try:
                     amount = float(parts[1])
+                    if amount > 0:
+                        balance += amount
+                    else:
+                        conn.send("[ERROR] Value must be greater than Zero".encode(FORMAT))
                 except ValueError:
                     conn.send("[ERROR] Amount must be a Number".encode(FORMAT))
-                    return
 
-                if amount > 0:
-                    balance += amount
-                else:
-                    conn.send("[ERROR] Value must be greater than Zero".encode(FORMAT))
+
 
 
             elif command == "WITHDRAW":

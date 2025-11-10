@@ -13,12 +13,12 @@ client.connect(ADDR)
 
 def send(msg):
     message = msg.encode(FORMAT)
-    msg_length = len(message)
-    send_length = str(msg_length).encode(FORMAT)
+    send_length = str(len(message)).encode(FORMAT)
     send_length += b' ' * (HEADER - len(send_length))
-    client.send(send_length)
-    client.send(message)
-    print(client.recv(2048).decode(FORMAT))
+    client.sendall(send_length)
+    client.sendall(message)
+    reply = client.recv(2048).decode(FORMAT)
+    print(reply, end='' if reply.endswith('\n') else '\n')
 
 def menu():
     while True:
@@ -28,19 +28,22 @@ def menu():
         print("3. Check Account Balance")
         print("4. Exit")
 
-
-        choice = input(" >> ")
+        choice = input(" >> ").strip()
 
         match choice:
             case "1":
-                amount = input("    Deposit Amount: $")
+                amount = input("    Deposit Amount: $").strip()
                 send(f"DEPOSIT {amount}")
             case "2":
-                amount = input("    Withdrawal Amount: $")
+                amount = input("    Withdrawal Amount: $").strip()
                 send(f"WITHDRAW {amount}")
             case "3":
-                send("BALANCE 0")
+                send("BALANCE")
             case "4":
                 send(DISCONNECT_MESSAGE)
                 break
+            case _:
+                print("Please choose 1–4.")
+
 menu()
+client.close()
